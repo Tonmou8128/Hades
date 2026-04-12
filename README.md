@@ -1,3 +1,5 @@
+Le truc est pas stable en multijoueurs je fixerai plus tard
+
 # 🐦‍🔥 - Hades
 
 ## 🔥 - Présentation
