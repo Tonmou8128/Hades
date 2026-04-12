@@ -3,6 +3,7 @@
 namespace hades\session;
 
 use Exception;
+use hades\menu\HadesInventory;
 use hades\menu\HadesMenu;
 use pocketmine\player\Player;
 
@@ -10,6 +11,8 @@ class HadesSession
 {
     private Player  $player;
     private ?HadesMenu $currentMenu = null;
+
+    private ?HadesInventory $inventory = null;
 
     private array $queue = [];
 
@@ -32,11 +35,20 @@ class HadesSession
     public function setCurrentMenu(HadesMenu $menu): void
     {
         $this->currentMenu = $menu;
+        $this->inventory = new HadesInventory($menu->getSize());
+        foreach ($menu->getContent() as $slot => $item) {
+            $this->inventory->setItem($slot, $item);
+        }
     }
 
     public function getCurrentMenu(): ?HadesMenu
     {
         return $this->currentMenu;
+    }
+
+    public function getCurrentInventory(): ?HadesInventory
+    {
+        return $this->inventory;
     }
 
     public function isOpening(): bool
@@ -72,7 +84,6 @@ class HadesSession
     public function addMenuToQueue(HadesMenu $menu): void
     {
         $this->queue[] = $menu;
-        var_dump($this->currentMenu->getName());
         $this->getCurrentMenu()?->close($this->getPlayer());
     }
 
@@ -82,11 +93,10 @@ class HadesSession
      */
     public function closingFinished(): void
     {
-        var_dump(isset($this->queue[0]));
-        var_dump("ça");
         if (isset($this->queue[0])) $this->shiftToNextMenu();
         else {
             $this->currentMenu = null;
+            $this->inventory = null;
             $this->setClosing(false);
         }
     }

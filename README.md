@@ -14,7 +14,7 @@ Avant d'utiliser quoi que ce soit, il faut appeler `Hades::register()` dans la b
 public function onEnable(): void
 {
     // ...
-    Hades::register($this);
+    if (!Hades::isRegistered()) Hades::register($this);
 }
 ```
 
@@ -25,8 +25,7 @@ Cette fonction renvoie un objet HadesMenu, personnalisable:
 |---------------------------|----------------------------------------|
 | `setName(<name>)`         | Met le nom <name> au coffre.           |
 | `setItem(<Item>, <slot>)` | Met l'objet <Item> dans le slot <slot> |
-| `removeItem(<slot>)`      | Retire l'objet du slot <slot>          |   
-| `getItem(<slot>)`         | Renvoie l'objet du slot <slot>         |
+Ainsi que d'autres expliquées plus amplement ensuite.
 
 La méthode `HadesMenu::show(<player>)` permet d'afficher le menu personnalisé au joueur.
 
@@ -67,7 +66,7 @@ $menu->addTransactionListener(function ($action) use ($sword) { // mettre dans l
 $menu->show($player);
 ```
 
-Dans cette fonction, l'argument `$action` est un HadesAction (une HadesAction = un changement entre un ancien objet et un nouvel dans un unique slot, par exemple "dans le slot 3 le totem devient de la terre", ou alors "dans le slot 10 de l'air devient un diamant"), et peut donner toutes les informations de l'interaction:
+Dans cette fonction, l'argument `$action` est une HadesAction (une HadesAction = un changement entre un ancien objet et un nouvel dans un unique slot, par exemple "dans le slot 3 le totem devient de la terre", ou alors "dans le slot 10 de l'air devient un diamant"), et peut donner toutes les informations de l'interaction:
 
 | Méthode             | Effet                                               | 
 |---------------------|-----------------------------------------------------| 
@@ -77,6 +76,7 @@ Dans cette fonction, l'argument `$action` est un HadesAction (une HadesAction = 
 | `getTargetItem()`   | Renvoie l'objet ayant remplacé                      |
 | `getItems()`        | Renvoie une liste contenant les 2 objets précédents |
 | `getItemsTypeIds()` | Renvoie une liste contenant les IDs des 2 objets    |
+| `getInventory()`    | Renvoie l'inventaire du menu                        | 
 
 Exemples d'utilisation:
 
@@ -110,6 +110,8 @@ $menu->addTransactionListener(function ($action) {
 On peut utiliser `$action->closeMenu()` dans la fonction de `HadesMenu->addTransactionListener()` pour fermer le menu suite à une transaction. `HadesMenu::close($player)` est à éviter, c'est moins sécurisé.
 
 On peut également directement appeler `HadesMenu::show($player)` pour un autre menu dans la transaction d'un menu, pour afficher immédiatement ce second menu. Il n'est pas nécessaire de fermer le premier menu, `show()` s'en chargera.
+
+Dernière note importante: pour modifier le menu via un listener (comme ici ou comme le point 2. ci-dessous), il faut impérativement modifier `$action->getInventory()`, qui renvoie un inventaire pouvant être modifié comme un inventaire vanilla. Ne SURTOUT pas utiliser `$menu->setItem()` autre part que juste après avoir créé le menu.
 
 ### 2. Lors de la fermeture
 

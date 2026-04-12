@@ -37,9 +37,6 @@ class Hades
         return self::$plugin;
     }
 
-    /**
-     * @internal
-     */
     public static function isRegistered(): bool
     {
         return isset(self::$plugin);
@@ -50,7 +47,6 @@ class Hades
      *
      * @param int $size
      * @return HadesMenu
-     * @throws Exception
      */
     public static function createMenu(int $size): HadesMenu
     {

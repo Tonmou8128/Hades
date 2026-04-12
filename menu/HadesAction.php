@@ -23,6 +23,11 @@ class HadesAction
         $this->slot = $action->getSlot();
     }
 
+    public function getInventory(): HadesInventory
+    {
+        return HadesSessionManager::getPlayerSession($this->player)->getCurrentInventory();
+    }
+
     public function getPlayer(): Player
     {
         return $this->player;

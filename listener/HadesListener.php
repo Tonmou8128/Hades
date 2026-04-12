@@ -24,7 +24,7 @@ class HadesListener implements Listener
     {
         $session = HadesSessionManager::getPlayerSession($event->getPlayer());
         if ($session === null || $session->isClosing()) return;
-        $sessionInventory = $session->getCurrentMenu()?->getInventory();
+        $sessionInventory = $session->getCurrentInventory();
         if ($event->getInventory() === $sessionInventory) {
             $session->getCurrentMenu()->close($session->getPlayer());
         }
@@ -64,7 +64,7 @@ class HadesListener implements Listener
         $cancel = false;
         $shouldClose = false;
         foreach ($transaction->getActions() as $action) {
-            if (!$action instanceof SlotChangeAction || $action->getInventory() !== $currentMenu->getInventory()) continue;
+            if (!$action instanceof SlotChangeAction || $action->getInventory() !== $session->getCurrentInventory()) continue;
             $hadesAction = new HadesAction($session->getPlayer(), $action);
             $listener = $currentMenu->getTransactionListener();
             if ($listener !== null) $customResult = $listener($hadesAction) ?? false;
@@ -75,6 +75,9 @@ class HadesListener implements Listener
         }
 
         if ($cancel) $event->cancel();
-        if ($shouldClose) Hades::getPlugin()->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($currentMenu, $player) {$currentMenu->close($player);}), 1);
+        if ($shouldClose) {
+            $session->setClosing(true);
+            Hades::getPlugin()->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($currentMenu, $player) {$currentMenu->close($player);}), 1);
+        }
     }
 }
