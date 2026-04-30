@@ -77,7 +77,7 @@ class HadesListener implements Listener
         if ($cancel) $event->cancel();
         if ($shouldClose) {
             $session->setClosing(true);
-            Hades::getPlugin()->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($currentMenu, $player) {$currentMenu->close($player);}), 1);
+            Hades::getPlugin()->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($currentMenu, $player) {$currentMenu?->close($player);}), 1);
         }
     }
 }

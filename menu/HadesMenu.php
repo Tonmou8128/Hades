@@ -103,7 +103,7 @@ class HadesMenu
         $session->getCurrentInventory()->setHolder($position, $player->getWorld());
         $this->createFakeChest($player, $position);
         Hades::getPlugin()->getScheduler()->scheduleDelayedTask(new ClosureTask(function () use ($player, $session) {
-            $player->setCurrentWindow($session->getCurrentInventory());
+            if ($session?->getCurrentInventory() !== null) $player->setCurrentWindow($session->getCurrentInventory());
             $session->setOpening(false);
         }), 1);
     }
